@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+		<title>Wassertank</title>
+        <script>
+		strSoll ="";
+		strPumpen ="";
+		strGiessen ="";
+		strLED1 = "";
+		var sollgesetzt = 0;
+		function GetArduinoIO()
+		{
+			nocache = "&nocache=" + Math.random() * 1000000;
+			var request = new XMLHttpRequest();
+			request.onreadystatechange = function()
+			{
+				if (this.readyState == 4) {
+					if (this.status == 200) {
+						if (this.responseXML != null) {
+							// XML file received 
+							var count;
+							// get values
+							document.getElementsByName("inhalt")[0].innerHTML =
+									this.responseXML.getElementsByTagName('inhalt')[0].childNodes[0].nodeValue;
+							document.getElementsByName("lblIstPegel")[0].innerHTML = "Istpegel: " +
+									this.responseXML.getElementsByTagName('istpegel')[0].childNodes[0].nodeValue + " mm";
+							if (!sollgesetzt){ // nur einmal laden sonst wird während Eingabe überschrieben
+								document.getElementsByName("lblSollPegel")[0].value =
+								this.responseXML.getElementsByTagName('sollpegel')[0].childNodes[0].nodeValue;
+								sollgesetzt = 1;
+							}
+							document.getElementsByName("lblRegen")[0].innerHTML = "Regen: " +
+									this.responseXML.getElementsByTagName('regenmenge')[0].childNodes[0].nodeValue + " mm/9h";
+									
+							// Giess Pumpe
+							if (this.responseXML.getElementsByTagName('giessen')[0].childNodes[0].nodeValue == 0) {
+								document.btn_form.btnGiessen.checked = true;
+							}	
+							else {
+								document.btn_form.btnGiessen.checked = false;
+							}
+							// Leeren Pumpe
+							if (this.responseXML.getElementsByTagName('pumpen')[0].childNodes[0].nodeValue == 0) {
+								document.btn_form.btnPumpen.checked = true;
+							}	
+							else {
+								document.btn_form.btnPumpen.checked = false;
+							}
+							// Set property of css element		
+							$("#water").height(this.responseXML.getElementsByTagName('wasserstand')[0].childNodes[0].nodeValue);
+							$("#setpoint").height(this.responseXML.getElementsByTagName('sollpegel')[0].childNodes[0].nodeValue/-3.2);							
+						}
+					}
+				}
+			}
+			// Enter in einem Textfeld führt diese Function aus
+			$('input[type=text]').keypress(function(e) {
+				if (e.which == 13) {
+						strSoll = "&Sollwert=" + document.getElementsByName("lblSollPegel")[0].value;
+						this.blur(); //Entfernt Focus von diesem Feld
+						sollgesetzt = 0;					
+				}
+			}); 		
+			
+			// send HTTP request with parameters
+			request.open("GET", "xml" + strSoll  + nocache + strGiessen, true);
+			request.send(null);
+			setTimeout('GetArduinoIO()', 3000);
+		}
+		
+		
+		function GetPump(){		
+			strGiessen = "&Giessen=1"; //Setzen für ein zyklus
+			nocache = "&nocache=" + Math.random() * 1000000;
+			var request = new XMLHttpRequest();
+			request.open("GET", "xml" + strSoll  + nocache + strGiessen, true);
+			request.send(null);
+			strGiessen = "&Giessen=0"; //Rücksetzen Impuls
+		}
+		
+</script>
+<style>
+.backcolor {background: wite; }
+#container {
+    background: rgba(0,0,0,0.30);
+    margin-left: 30px;
+    margin-right: auto;
+    width: 400px;
+    border-left: 1px solid #bbb;
+    border-right: 1px solid #bbb;
+    border-bottom: 1px solid #bbb;
+    border-top: 1px solid #ccc;
+    border-radius: 10px;
+    padding-left: 7px;
+    padding-right: 7px;
+    padding-bottom: 25px;
+    padding-top: 7px;
+}
+
+#glass {
+    background: rgba(255,255,255,0.80);
+    border-radius: 10px;
+    width: 400px;
+    height: 300px;
+    position: relative;
+}
+
+#setpoint {
+    border-bottom: 3px dotted blue;
+    margin-top: 6px;
+    width: 100px;
+	right: 0px;
+    height: 20px;
+    position: absolute;
+}
+
+#pipe {
+	background: rgba(0,0,0,0.20);
+    border-radius: 6px;
+    width: 50px;
+    height: 20px;
+    position: relative;
+	top: 8px;
+    right: -390px;
+}
+
+#water {
+    background-color: #5ce0b6;
+    position: absolute;
+    margin-top: 75px;
+    bottom: 0px;
+    width: 400px;
+    height: 20
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.label {
+  display: inline-block;
+  box-sizing: content-box;
+  padding:7px 15px 8px 15px;
+  border: 1px solid rgb(181,181,179);
+  border-top-color: rgba(119,119,118,1);
+  border-radius: 40px;
+  font: normal 28px/normal Arial, Helvetica, sans-serif;
+  color: rgba(10,120,93,1);
+  text-align: center;
+  -o-text-overflow: clip;
+  text-overflow: clip;
+  background: linear-gradient(180deg, rgba(229,227,220,1) 0, rgba(224,214,204,1) 100%);
+  background-origin: padding-box;
+  background-clip: border-box;
+  background-size: auto auto;
+  transition: all 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+.label.liter {
+	margin-left: 10px;
+	margin-top: -10px;
+}
+
+.switch input {
+    /* First, we make it as wide as the container */
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    /* Then, we put it on top of everything else */
+    z-index: 100;
+    /* Last, we make it invisible */
+    opacity: 0;
+    /* This one is just for ergonomy */
+    cursor: pointer;
+}
+.switch {
+    width: 180px;
+    height: 50px;
+    position: relative;
+}
+.switch label {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: #a5a39d;
+    border-radius: 40px;
+    box-shadow:
+        inset 0 3px 8px 1px rgba(0,0,0,0.2),
+        0 1px 0 rgba(255,255,255,0.5);
+}
+.switch label:after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: -8px; right: -8px; bottom: -8px; left: -8px;
+    border-radius: inherit;
+    background: #ccc; /* Fallback */
+    background: linear-gradient(#f2f2f2, #ababab);
+    box-shadow: 0 0 10px rgba(0,0,0,0.3),
+        0 1px 1px rgba(0,0,0,0.25);
+}
+.switch label:before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: -18px; right: -18px; bottom: -18px; left: -18px;
+    border-radius: inherit;
+    background: #eee; /* Fallback */
+    background: linear-gradient(#e5e7e6, #eee);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.5);
+    -webkit-filter: blur(1px); /* Smooth trick */
+    filter: blur(1px); /* Future-proof */
+}
+.switch label i {
+    display: block;
+    height: 100%;
+    width: 60%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 2;
+    border-radius: inherit;
+    background: #b2ac9e; /* Fallback */
+    background: linear-gradient(#f7f2f6, #b2ac9e);
+    box-shadow:
+        inset 0 1px 0 white,
+        0 0 8px rgba(0,0,0,0.3),
+        0 5px 5px rgba(0,0,0,0.2);
+}
+.switch label i:after {
+    content: "";
+    position: absolute;
+    left: 15%;
+    top: 25%;
+    width: 70%;
+    height: 50%;
+    background: #d2cbc3; /* Fallback */
+    background: linear-gradient(#cbc7bc, #d2cbc3);
+    border-radius: inherit;
+}
+.switch label i:before {
+    content: "off";
+    position: absolute;
+    top: 50%;
+    right: -50%;
+    margin-top: -15px;
+    color: #666; /* Fallback */
+    color: rgba(0,0,0,0.5);
+    font-style: normal;
+    font-weight: bold;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 24px;
+    text-transform: uppercase;
+    text-shadow: 0 1px 0 #bcb8ae, 0 -1px 0 #97958e;
+}
+.switch input:checked ~ label { /* Background */
+	background: #9aff92;
+}
+
+.switch input:checked ~ label i { /* Toggle */
+    left: auto;
+    right: -1%;
+}
+
+.switch input:checked ~ label i:before { /* On/off */
+    content: "on";
+    right: 115%;
+    color: #62804a;
+    text-shadow: 0 1px 0 #afcb9b, 0 -1px 0 #6b8659;
+}
+.lamp input {
+    /* First, we make it as wide as the container */
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    /* Then, we put it on top of everything else */
+    z-index: 100;
+    /* Last, we make it invisible */
+    opacity: 0;
+    /* This one is just for ergonomy */
+    cursor: pointer;
+}
+.lamp {
+    width: 180px;
+    height: 50px;
+    position: relative;
+}
+.lamp label {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: #a5a39d;
+    border-radius: 40px;
+    box-shadow:
+        inset 0 3px 8px 1px rgba(0,0,0,0.2),
+        0 1px 0 rgba(255,255,255,0.5);
+}
+
+.lamp label i:before {
+    content: "off";
+    position: absolute;
+    top: 50%;
+    right: 35%;
+    margin-top: -15px;
+    color: #666; /* Fallback */
+    color: rgba(0,0,0,0.5);
+    font-style: normal;
+    font-weight: bold;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 24px;
+    text-transform: uppercase;
+    text-shadow: 0 1px 0 #bcb8ae, 0 -1px 0 #97958e;
+}
+.lamp input:checked ~ label { /* Background */
+	background: #9aff92;
+}
+
+.lamp input:checked ~ label i { /* Toggle */
+    left: auto;
+    right: -1%;
+}
+
+.lamp input:checked ~ label i:before { /* On/off */
+    content: "on";
+    right: 40%;
+    color: #62804a;
+    text-shadow: 0 1px 0 #afcb9b, 0 -1px 0 #6b8659;
+}
+
+
+</style>
+</head>
+	  <body onload='GetArduinoIO()'> 
+<table border="0" cellpadding="20" cellspacing="2" width="900px">
+<br>
+
+<tbody>
+		<tr>
+		<td bgcolor="#e0e0e0">
+		<div id="container">
+			<div id="glass">
+			<div id="pipe"></div> 
+			<div id="water"> <div class="label liter" name="inhalt">.. </div></div>
+			<div id="setpoint"></div>
+			</div>
+			</div>
+		</td>
+		<td bgcolor="#e0e0e0">   	
+			<span style="padding:2px 5px 2px 5px;" class="label">Sollpegel:<input style="padding:5px 5px 5px 5px;"type="text" class="label input" size = 4 name="lblSollPegel"> <span></span>mm</span>
+			<br>  
+			<br>
+			<div class="label" name="lblIstPegel">..</div>		
+			<br>
+			<br>
+			<div class="label" name="lblRegen">.. </div>
+			<br>
+		</td>
+		<tr>   
+		<td bgcolor="#e0e0e0">
+			<form name="btn_form">
+			<div style="float: right; margin-right: 25px; margin-top: 5px;" class="lamp"><input type="checkbox" disabled="disabled" value="0" name="btnPumpen"/> <label><i></i></label></div> 
+			<div style="float: left; margin-left: 30px; margin-top: 5px;" class="label" name="lblRegen">Pumpe Leeren</div> 
+			<tab>
+			<br>
+			<br>
+			<br>
+			<br>
+			<div style="float: right; margin-right: 25px; margin-top:30px;" class="switch"><input type="checkbox" value="0" name="btnGiessen" onclick="GetPump()"/><label><i></i></label></div> 
+			</form>
+			<div style=" margin-left: 30px; margin-top: 30px;" class="label" name="lblRegen">Pumpe Giessen</div> 
+		</td>
+		<td width="40%" align="middle" bgcolor="#e0e0e0">  
+			<br>
+			<input style="width: 150px; type="button" class="label" name="lblRegen" value="Wetter..">
+			<br>	
+		</td>
+		</tr>
+	</tbody>		
+</table>		
+</body>
+</html>
+
+
