@@ -43,11 +43,6 @@ Cheap but good Fluke Multimeter:  http://s.click.aliexpress.com/e/tH9jMvIs
 
 Cable set for Multimeter  : http://s.click.aliexpress.com/e/s7EqNMre
 
-Software:
-- Arduino Sketch for ESP and HTML Code:
-https://github.com/DIYDave/IoT-Rainwater-Tank
-
-
 Services used:
 - Weather:           https://openweathermap.org/
 - Thingspeak:  https://thingspeak.com/
