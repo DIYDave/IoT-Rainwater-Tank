@@ -1,22 +1,18 @@
 # IoT-Rainwater-Tank
-IoT Rainwater tank with ESP8266. Web Server &amp; Client, OLED Dispaly, HC-SR04, SPIFFS
+### IoT Rainwater tank with ESP8266. Web Server &amp; Client, OLED Dispaly, HC-SR04, SPIFFS
+This is about a rainwater tank which, thanks to an ESP8266, independently gets the weather data and sends a push message to the smartphone if the current water level in the tank is too high for the expected rainfall.
+
+![alt tag](https://github.com/DIYDave/IoT-Rainwater-Tank/blob/master/photos/Github.jpg)
 <br>
 On Youtube: https://www.youtube.com/watch?v=UjX3-XNddWY  (
 Sorry, the Video is in German only.)
-![alt tag](https://github.com/DIYDave/IoT-Rainwater-Tank/blob/master/photos/Github.jpg)
-<br>
-This is about a rainwater tank which, thanks to an ESP8266, independently gets the weather data and sends a push message to the smartphone if the current water level in the tank is too high for the expected rainfall.
 
 ESP8266 NodeMCU1.0(ESP12E)
-Act as HTML-5 Web server and manage multiple client tasks
-
-Sends push notification over Prowl to iOS devices
-
-Sends data to thingspeak.com
-
-Measures water level with ultrasonic
-
-Controls two pumps start / stop over HTML or radio remote control
+- Act as HTML-5 Web server and manage multiple client tasks
+- Sends push notification over Prowl to iOS devices
+- Sends data to thingspeak.com
+- Measures water level with ultrasonic
+- Controls two pumps start / stop over HTML or radio remote control
 
 ## 🔥 New version 2.02 "easy to use" for PlatformIO
 Due to the problems with the Arduino IDE and the various libraries, I switched to Visual Studio Code and PlatformIO a few years ago. 
