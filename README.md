@@ -18,6 +18,12 @@ Measures water level with ultrasonic
 
 Controls two pumps start / stop over HTML or radio remote control
 
+## 🔥 New version 2.02 "easy to use" for PlatformIO
+Due to the problems with the Arduino IDE and the various libraries, I switched to Visual Studio Code and PlatformIO a few years ago. 
+This new variant of the project is based entirely on these tools. 
+All required libraries are included in the project. (Folder "lib") the ESP core version can be set to fixed version e.g. v2.4.2
+How To: https://platformio.org/install/ide?install=vscode
+
 List of resources:
 
 Hardware:
