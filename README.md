@@ -34,8 +34,8 @@ How To: https://platformio.org/install/ide?install=vscode
 You can select a 5V type i.e. : http://s.click.aliexpress.com/e/braq4jEu
 
 #### Useful:
-Cheap but good Fluke Multimeter:  http://s.click.aliexpress.com/e/tH9jMvIs
-Cable set for Multimeter  : http://s.click.aliexpress.com/e/s7EqNMre
+- Cheap but good Fluke Multimeter:  http://s.click.aliexpress.com/e/tH9jMvIs
+- Cable set for Multimeter  : http://s.click.aliexpress.com/e/s7EqNMre
 
 #### Services used:
 - Weather:           https://openweathermap.org/
